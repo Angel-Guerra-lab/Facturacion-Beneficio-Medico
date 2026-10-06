@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <style>
+      /* =========================================================
+         TOKENS DE DISEÑO (claro / oscuro)
+         ========================================================= */
+      :root {
+        --iungo-purple: #6B2D82;
+        --iungo-purple-dark: #4A1A5B;
+        --iungo-deep: #2A0E38;
+        --iungo-magenta: #A82282;
+        --iungo-cyan: #00BCD4;
+        --iungo-cyan-dark: #00ACC1;
+        --c-green: #10B981;
+        --c-orange: #F59E0B;
+        --c-red: #EF4444;
+
+        --bg: #F4F1F8;
+        --card: #FFFFFF;
+        --soft: #F7F3FA;
+        --text: #2B2733;
+        --muted: #7B748A;
+        --border: #ECE5F2;
+        --shadow: 0 1px 2px rgba(42,14,56,.04), 0 10px 28px rgba(42,14,56,.06);
+        --row-hover: #FAF7FC;
+        --thead: #F6F1F9;
+        --total-bg: #EFE4F5;
+      }
+      body.dark-mode {
+        --bg: #100D15;
+        --card: #1B1722;
+        --soft: #231E2C;
+        --text: #EDE9F3;
+        --muted: #9D96AB;
+        --border: #2E2838;
+        --shadow: 0 10px 28px rgba(0,0,0,.45);
+        --row-hover: #241F2D;
+        --thead: #251C2F;
+        --total-bg: #2D1B3A;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, sans-serif;
+        font-size: 14px;
+        transition: background-color .35s ease, color .35s ease;
+      }
+      .text-muted { color: var(--muted) !important; }
+      .wrap { max-width: 1440px; margin: 0 auto; padding: 0 24px; }
+
+      /* =========================================================
+         ENCABEZADO
+         ========================================================= */
+      .sticky-top-area { position: sticky; top: 0; z-index: 1020; background: var(--bg); transition: background-color .35s ease; }
+      .topbar {
+        background: linear-gradient(110deg, var(--iungo-deep) 0%, var(--iungo-purple-dark) 45%, var(--iungo-purple) 100%);
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(42,14,56,.25);
+      }
+      .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+      .brand { display: flex; align-items: center; gap: 14px; }
+      .logo-iungo { height: 38px; background: #fff; padding: 5px 10px; border-radius: 10px; }
+      .brand-divider { width: 1px; height: 32px; background: rgba(255,255,255,.25); }
+      .brand-title { line-height: 1.15; font-weight: 600; font-size: .9rem; }
+      .brand-title small { display: block; font-weight: 500; opacity: .7; font-size: .75rem; }
+
+      .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .ctrl-group { display: flex; align-items: center; gap: 8px; }
+      .ctrl-label { font-size: .72rem; opacity: .75; font-weight: 600; }
+      .select-pill {
+        appearance: none; -webkit-appearance: none;
+        background: rgba(255,255,255,.12) url("data:image/svg+xml,%3Csvg xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M1.6 4.6a.6.6 0 0 1 .8 0L8 10.2l5.6-5.6a.6.6 0 1 1 .8.8l-6 6a.6.6 0 0 1-.8 0l-6-6a.6.6 0 0 1 0-.8z'/%3E%3C/svg%3E") no-repeat right 12px center;
+        color: #fff; border: 1px solid rgba(255,255,255,.28); border-radius: 10px;
+        padding: 7px 34px 7px 12px; font-weight: 600; font-size: .82rem; font-family: inherit;
+        min-width: 150px; cursor: pointer; transition: background-color .2s;
+      }
+      .select-pill:hover { background-color: rgba(255,255,255,.2); }
+      .select-pill:focus { outline: 2px solid var(--iungo-cyan); outline-offset: 2px; }
+      .select-pill option { color: #222; background: #fff; }
+
+      .btn-top {
+        background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.28);
+        border-radius: 10px; padding: 7px 14px; font-weight: 600; font-size: .82rem; display: inline-flex; align-items: center; gap: 6px;
+        transition: background-color .2s;
+      }
+      .btn-top:hover { background: rgba(255,255,255,.22); color: #fff; }
+      .btn-top:focus-visible { outline: 2px solid var(--iungo-cyan); outline-offset: 2px; }
+      .btn-icon { padding: 7px 10px; }
+      .sync-time { font-size: .72rem; opacity: .7; }
+
+      /* Pestañas segmentadas */
+      .tabs-bar { padding: 14px 0 12px; display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap; }
+      .tabs-bar .seg-tabs { flex: 1 1 520px; }
+      .grupo-switch { flex: 0 0 auto; }
+      .grupo-switch .nav-link { padding: 10px 16px; }
+      .grupo-switch .nav-link.active.g-holding { background: linear-gradient(135deg, var(--iungo-purple), var(--iungo-purple-dark)); }
+      .grupo-switch .nav-link.active.g-externo { background: linear-gradient(135deg, var(--iungo-cyan-dark), #00838F); box-shadow: 0 4px 12px rgba(0,172,193,.3); }
+      .grupo-switch .nav-link.active.g-todos { background: linear-gradient(135deg, #5A5368, #3B3546); box-shadow: 0 4px 12px rgba(59,53,70,.3); }
+      .grupo-chip { display: inline-flex; align-items: center; gap: 6px; font-size: .75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; margin-top: 10px; }
+      .grupo-chip.g-holding { background: rgba(107,45,130,.12); color: var(--iungo-purple); }
+      .grupo-chip.g-externo { background: rgba(0,172,193,.14); color: var(--iungo-cyan-dark); }
+      .grupo-chip.g-todos { background: rgba(123,116,138,.15); color: var(--muted); }
+      body.dark-mode .grupo-chip.g-holding { color: #D8B4E2; }
+      .fila-vacia td { text-align: center; color: var(--muted) !important; padding: 28px 16px !important; }
+      .seg-tabs {
+        display: flex; gap: 6px; background: var(--card); border: 1px solid var(--border);
+        border-radius: 14px; padding: 6px; box-shadow: var(--shadow); margin: 0; list-style: none;
+      }
+      .seg-tabs .nav-item { flex: 1; }
+      .seg-tabs .nav-link {
+        width: 100%; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 600; font-size: .86rem;
+        color: var(--muted); background: transparent; display: flex; align-items: center; justify-content: center; gap: 8px;
+        transition: background-color .25s, color .25s;
+      }
+      .seg-tabs .nav-link:hover { color: var(--iungo-purple); background: var(--soft); }
+      body.dark-mode .seg-tabs .nav-link:hover { color: #D8B4E2; }
+      .seg-tabs .nav-link.active { background: linear-gradient(135deg, var(--iungo-purple), var(--iungo-purple-dark)); color: #fff; box-shadow: 0 4px 12px rgba(107,45,130,.3); }
+
+      /* =========================================================
+         TARJETAS
+         ========================================================= */
+      .card-i { background: var(--card); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 22px; transition: background-color .35s, border-color .35s; }
+      .card-title-i { font-weight: 700; font-size: .98rem; margin: 0; color: var(--text); }
+      .card-sub-i { font-size: .78rem; color: var(--muted); margin: 2px 0 0; }
+
+      /* Hero */
+      .hero {
+        position: relative; overflow: hidden; border-radius: 18px; padding: 24px 28px; margin-bottom: 18px;
+        background: linear-gradient(120deg, var(--card) 0%, var(--card) 45%, #EFE3F6 100%);
+        border: 1px solid var(--border); box-shadow: var(--shadow);
+      }
+      body.dark-mode .hero { background: linear-gradient(120deg, var(--card) 0%, var(--card) 45%, #2C1A3A 100%); }
+      .hero h1 { font-size: 1.55rem; font-weight: 800; margin: 0; letter-spacing: -.4px; color: var(--text); }
+      .hero p { margin: 4px 0 0; color: var(--muted); font-weight: 500; }
+      .hero-badge {
+        position: absolute; right: 36px; top: 50%; width: 76px; height: 76px; border-radius: 20px;
+        transform: translateY(-50%) rotate(45deg);
+        background: linear-gradient(135deg, var(--iungo-magenta), var(--iungo-purple));
+        box-shadow: 0 10px 30px rgba(168,34,130,.35), 0 0 0 14px rgba(168,34,130,.07), 0 0 0 30px rgba(168,34,130,.04);
+        display: flex; align-items: center; justify-content: center;
+      }
+      .hero-badge i { transform: rotate(-45deg); color: #fff; font-size: 2rem; }
+
+      /* KPIs */
+      .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 18px 20px; height: 100%; transition: background-color .35s, border-color .35s; }
+      .kpi-head { display: flex; align-items: center; gap: 10px; }
+      .kpi-icon { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0; }
+      .kpi-label { font-size: .8rem; font-weight: 600; color: var(--muted); }
+      .kpi-value { font-size: 1.6rem; font-weight: 800; letter-spacing: -.5px; margin-top: 12px; color: var(--text); white-space: nowrap; }
+      .kpi-value.small-v { font-size: 1.15rem; white-space: normal; line-height: 1.25; }
+      .kpi-delta { font-size: .76rem; font-weight: 700; margin-top: 4px; min-height: 1.1em; }
+      .kpi-delta .muted { color: var(--muted); font-weight: 500; }
+      .ic-purple { background: rgba(107,45,130,.12); color: var(--iungo-purple); }
+      .ic-cyan   { background: rgba(0,188,212,.13); color: var(--iungo-cyan-dark); }
+      .ic-green  { background: rgba(16,185,129,.13); color: var(--c-green); }
+      .ic-orange { background: rgba(245,158,11,.15); color: var(--c-orange); }
+      .ic-grey   { background: rgba(123,116,138,.14); color: var(--muted); }
+      body.dark-mode .ic-purple { color: #C99BDB; background: rgba(201,155,219,.14); }
+
+      .text-positive { color: var(--c-green) !important; font-weight: 700; }
+      .text-negative { color: var(--c-red) !important; font-weight: 700; }
+
+      /* Gráficas */
+      .chart-wrapper { position: relative; height: 300px; }
+      .legend-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+      .chart-legend-inline { display: flex; gap: 16px; font-size: .78rem; color: var(--muted); font-weight: 600; }
+
+      .donut-layout { display: flex; align-items: center; gap: 18px; height: 300px; }
+      .donut-box { position: relative; flex: 0 0 52%; height: 100%; }
+      .donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; text-align: center; }
+      .donut-center strong { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+      .donut-center span { font-size: .74rem; color: var(--muted); }
+      .donut-legend { flex: 1; max-height: 100%; overflow-y: auto; padding-right: 4px; }
+      .donut-legend .item { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .8rem; padding: 5px 0; color: var(--text); }
+      .donut-legend .item .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .donut-legend .item .pct { color: var(--muted); font-weight: 700; flex-shrink: 0; }
+
+      /* Tablas */
+      .table-box { border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; }
+      .table-iungo { margin: 0; --bs-table-bg: transparent; --bs-table-color: var(--text); }
+      .table-iungo thead th {
+        background: var(--thead); color: var(--muted); font-weight: 700; font-size: .78rem;
+        padding: 12px 16px; border-bottom: 1px solid var(--border); white-space: nowrap;
+      }
+      .table-iungo thead th.th-accent { background: var(--iungo-cyan-dark); color: #fff; }
+      .table-iungo tbody td { padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap; }
+      .table-iungo tbody tr:hover td { background: var(--row-hover); }
+      .table-iungo tbody strong { font-weight: 600; color: var(--text); }
+      .row-totales td { background: var(--total-bg) !important; font-weight: 800; border-top: 2px solid var(--iungo-purple); border-bottom: 0 !important; color: var(--iungo-purple-dark) !important; }
+      body.dark-mode .row-totales td { color: #fff !important; border-top-color: #C99BDB; }
+      .row-totales td.text-positive { color: var(--c-green) !important; }
+      .row-totales td.text-negative { color: var(--c-red) !important; }
+
+      .btn-export {
+        background: linear-gradient(135deg, var(--iungo-purple), var(--iungo-purple-dark)); color: #fff; border: 0;
+        border-radius: 10px; padding: 7px 14px; font-weight: 600; font-size: .8rem; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+      }
+      .btn-export:hover { color: #fff; filter: brightness(1.12); }
+      .btn-soft {
+        background: var(--soft); color: var(--text); border: 1px solid var(--border); border-radius: 10px;
+        padding: 7px 14px; font-weight: 600; font-size: .8rem; display: inline-flex; align-items: center; gap: 6px; transition: all .25s;
+      }
+      .btn-soft:hover { border-color: var(--iungo-purple); color: var(--iungo-purple); }
+      .btn-soft.copied { background: var(--c-green); border-color: var(--c-green); color: #fff; }
+
+      /* Análisis ejecutivo */
+      .analysis-box { border-left: 5px solid var(--iungo-cyan); }
+      .analysis-box ul { padding-left: 20px; margin: 0; line-height: 1.7; font-size: .95rem; color: var(--text); }
+
+      /* Loader */
+      .loader-overlay { position: fixed; inset: 0; background: rgba(26,10,36,.88); z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; text-align: center; padding: 20px; }
+      .loader-overlay .spinner-border { width: 3.5rem; height: 3.5rem; color: var(--iungo-cyan); }
+
+      @media (max-width: 991px) {
+        .hero-badge { display: none; }
+        .donut-layout { flex-direction: column; height: auto; }
+        .donut-box { flex: none; width: 100%; height: 240px; }
+        .donut-legend { width: 100%; max-height: 180px; }
+      }
+      @media (max-width: 767px) {
+        .wrap { padding: 0 14px; }
+        .seg-tabs .nav-link span { display: none; }
+        .brand-divider, .brand-title { display: none; }
+        .sync-time { display: none; }
+        .kpi-value { font-size: 1.35rem; }
+      }
+      @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    </style>
+  </head>
+  <body>
+
+    <!-- OVERLAY DE CARGA -->
+    <div id="initialLoader" class="loader-overlay">
+      <div class="spinner-border" role="status"></div>
+      <h5 class="mt-4 fw-bold" id="loaderText">Consultando base de datos segura...</h5>
+      <div class="small mt-2" style="opacity:.75" id="loaderTimer"></div>
+    </div>
+    <script>
+      window.addEventListener('error', function (e) {
+        var t = document.getElementById('loaderText');
+        if (!t) return;
+        var linea = '';
+        try {
+          var lineas = document.documentElement.outerHTML.split('\n');
+          var txt = lineas[(e.lineno || 1) - 1] || '';
+          var c = e.colno || 0;
+          linea = txt.substring(Math.max(0, c - 60), c + 60);
+        } catch (x) {}
+        var esc = function (v) { return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+        t.innerHTML = 'Error en la p\u00e1gina:<br><small class="fw-normal">' + esc(e.message) +
+          '<br>L\u00ednea ' + e.lineno + ', columna ' + e.colno +
+          '<br><code style="color:#7FE3F0;white-space:pre-wrap">' + esc(linea) + '</code></small>';
+      });
+      var LOADER_T0 = Date.now();
+      setInterval(function () {
+        var l = document.getElementById('initialLoader'), el = document.getElementById('loaderTimer');
+        if (!l || l.style.display === 'none') return;
+        var seg = Math.round((Date.now() - LOADER_T0) / 1000);
+        el.innerHTML = seg + ' s esperando respuesta de Drive' + (seg > 20 ? '<br>Est\u00e1 tardando m\u00e1s de lo normal: revisa Ejecuciones en Apps Script.' : '');
+      }, 1000);
+    </script>
+
+    <!-- ENCABEZADO FIJO -->
+    <div class="sticky-top-area">
+      <header class="topbar">
+        <div class="wrap">
+          <div class="brand">
+            <img src="https://lh3.googleusercontent.com/d/1lCE9xESxYgu4zYERrrxX5OoslU7jsTBV" alt="IUNGO" class="logo-iungo">
+            <div class="brand-divider"></div>
+            <div class="brand-title">Facturación<small>Beneficio Médico</small></div>
+          </div>
+
+          <div class="top-actions">
+            <!-- Controles según pestaña -->
+            <div id="ctrl-mensual" class="ctrl-group">
+              <i class="bi bi-calendar-event"></i>
+              <select id="fileSelectMes" class="select-pill" onchange="loadMensual()" aria-label="Seleccionar mes"></select>
+            </div>
+            <div id="ctrl-comparativo" class="ctrl-group" style="display:none;">
+              <span class="ctrl-label">Base</span>
+              <select id="compSelectAnterior" class="select-pill" onchange="loadComparativo()" aria-label="Mes base"></select>
+              <span class="ctrl-label">Actual</span>
+              <select id="compSelectActual" class="select-pill" onchange="loadComparativo()" aria-label="Mes actual"></select>
+            </div>
+            <div id="ctrl-anual" class="ctrl-group" style="display:none;">
+              <i class="bi bi-calendar-check"></i>
+              <select id="selectAnio" class="select-pill" style="min-width:110px;" onchange="loadAnual()" aria-label="Seleccionar año"></select>
+            </div>
+
+            <span class="sync-time" id="syncTime"></span>
+            <button class="btn-top" onclick="forceReloadData()" title="Volver a leer los archivos de Drive">
+              <i class="bi bi-arrow-repeat"></i> Actualizar
+            </button>
+            <button id="btnDarkMode" class="btn-top btn-icon" onclick="toggleDarkMode()" title="Cambiar tema" aria-label="Cambiar tema">
+              <i class="bi bi-moon-stars"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="wrap tabs-bar">
+        <ul class="nav seg-tabs" id="pills-tab" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active" id="btn-mensual" data-bs-toggle="pill" data-bs-target="#tab-mensual" onclick="modoVista('mensual')">
+              <i class="bi bi-house-door"></i><span>Resumen Mensual</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" id="btn-comparativo" data-bs-toggle="pill" data-bs-target="#tab-comparativo" onclick="modoVista('comparativo')">
+              <i class="bi bi-bar-chart-line"></i><span>Análisis Comparativo</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" id="btn-anual" data-bs-toggle="pill" data-bs-target="#tab-anual" onclick="modoVista('anual')">
+              <i class="bi bi-calendar3"></i><span>Acumulado Anual</span>
+            </button>
+          </li>
+        </ul>
+        <ul class="nav seg-tabs grupo-switch" role="group" aria-label="Grupo de empresas">
+          <li class="nav-item"><button class="nav-link active g-holding" data-grupo="holding" onclick="cambiarGrupo('holding')"><i class="bi bi-buildings"></i><span>Holding's</span></button></li>
+          <li class="nav-item"><button class="nav-link g-externo" data-grupo="externo" onclick="cambiarGrupo('externo')"><i class="bi bi-person-badge"></i><span>Clientes Externos</span></button></li>
+          <li class="nav-item"><button class="nav-link g-todos" data-grupo="todos" onclick="cambiarGrupo('todos')"><i class="bi bi-collection"></i><span>Consolidado</span></button></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <main class="wrap pb-5">
+
+      <section class="hero">
+        <h1>Facturación Beneficio Médico</h1>
+        <p id="heroSub">Panel de control</p>
+        <span class="grupo-chip g-holding" id="grupoChip"><i class="bi bi-buildings"></i> Holding's</span>
+        <div class="hero-badge" aria-hidden="true"><i class="bi bi-activity"></i></div>
+      </section>
+
+      <div class="tab-content" id="pills-tabContent">
+
+        <!-- ================= PESTAÑA 1: RESUMEN MENSUAL ================= -->
+        <div class="tab-pane fade show active" id="tab-mensual" role="tabpanel">
+          <div class="row g-3 mb-3">
+            <div class="col-xl-3 col-md-6">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-purple"><i class="bi bi-wallet2"></i></div><span class="kpi-label">Total Facturado</span></div>
+                <div class="kpi-value" id="kpiMesTotal">$ 0.00</div>
+                <div class="kpi-delta" id="deltaMesTotal"></div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-cyan"><i class="bi bi-people"></i></div><span class="kpi-label">Beneficiarios + Chequeo</span></div>
+                <div class="kpi-value" id="kpiMesBen">$ 0.00</div>
+                <div class="kpi-delta" id="deltaMesBen"></div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-green"><i class="bi bi-receipt"></i></div><span class="kpi-label">Total IVA</span></div>
+                <div class="kpi-value" id="kpiMesIva">$ 0.00</div>
+                <div class="kpi-delta" id="deltaMesIva"></div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-orange"><i class="bi bi-graph-up-arrow"></i></div><span class="kpi-label">Proyección Anual</span></div>
+                <div class="kpi-value" id="kpiMesProy">$ 0.00</div>
+                <div class="kpi-delta" id="deltaMesProy"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-xl-7">
+              <div class="card-i h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                  <div>
+                    <h2 class="card-title-i" id="tituloTendMes">Facturación mensual</h2>
+                    <p class="card-sub-i">Meses del año del archivo seleccionado</p>
+                  </div>
+                  <div class="chart-legend-inline">
+                    <span><i class="legend-dot" style="background:var(--iungo-purple)"></i>Total</span>
+                    <span><i class="legend-dot" style="background:var(--iungo-cyan)"></i>Beneficiarios</span>
+                  </div>
+                </div>
+                <div class="chart-wrapper"><canvas id="chartTendMes"></canvas></div>
+              </div>
+            </div>
+            <div class="col-xl-5">
+              <div class="card-i h-100">
+                <h2 class="card-title-i mb-3">Participación por empresa</h2>
+                <div class="donut-layout">
+                  <div class="donut-box">
+                    <canvas id="chartMensual"></canvas>
+                    <div class="donut-center"><strong id="donutTotal">$ 0</strong><span>Total</span></div>
+                  </div>
+                  <div class="donut-legend" id="donutLegend"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-i">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+              <h2 class="card-title-i">Detalle por Unidad de Negocio</h2>
+              <a id="btnDescargaMes" href="#" target="_blank" class="btn-export"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</a>
+            </div>
+            <div class="table-box">
+              <table class="table align-middle table-iungo">
+                <thead><tr><th>Unidad de Negocio</th><th class="text-end">Beneficiarios</th><th class="text-end">IVA</th><th class="text-end">Total Factura</th></tr></thead>
+                <tbody id="tableMensualBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= PESTAÑA 2: ANÁLISIS COMPARATIVO ================= -->
+        <div class="tab-pane fade" id="tab-comparativo" role="tabpanel">
+          <div class="card-i analysis-box mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+              <h2 class="card-title-i"><i class="bi bi-lightbulb me-2" style="color:var(--c-orange)"></i>Análisis ejecutivo de variaciones</h2>
+              <button id="btnCopiarResumen" class="btn-soft" onclick="copiarResumenAlPortapapeles()"><i class="bi bi-copy"></i> Copiar para correo</button>
+            </div>
+            <ul id="textoAnalisis"></ul>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-grey"><i class="bi bi-cash-stack"></i></div><span class="kpi-label">Diferencia total ($)</span></div>
+                <div class="kpi-value" id="kpiDiffDinero">$ 0.00</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-grey"><i class="bi bi-percent"></i></div><span class="kpi-label">Variación relativa (%)</span></div>
+                <div class="kpi-value" id="kpiDiffPorcentaje">0.00%</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-cyan"><i class="bi bi-building-up"></i></div><span class="kpi-label">Empresa con mayor alza</span></div>
+                <div class="kpi-value small-v" id="kpiMejorEmpresa">-</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-i mb-3">
+            <h2 class="card-title-i mb-3">Comparativa lado a lado</h2>
+            <div class="chart-wrapper" style="height:320px;"><canvas id="chartComparativo"></canvas></div>
+          </div>
+
+          <div class="card-i">
+            <h2 class="card-title-i mb-3">Comparativa por Unidad de Negocio</h2>
+            <div class="table-box">
+              <table class="table align-middle table-iungo">
+                <thead>
+                  <tr>
+                    <th>Unidad de Negocio</th>
+                    <th class="text-end" id="thMesAnterior">Mes Base</th>
+                    <th class="text-end th-accent" id="thMesActual">Mes Actual</th>
+                    <th class="text-end">Variación ($)</th>
+                    <th class="text-end">Variación (%)</th>
+                  </tr>
+                </thead>
+                <tbody id="tableComparativaBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= PESTAÑA 3: ACUMULADO ANUAL ================= -->
+        <div class="tab-pane fade" id="tab-anual" role="tabpanel">
+          <div class="row g-3 mb-3">
+            <div class="col-xl-3 col-md-6">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-purple"><i class="bi bi-bank"></i></div><span class="kpi-label">Facturado actual</span></div>
+                <div class="kpi-value" id="kpiAnualTotal">$ 0.00</div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-cyan"><i class="bi bi-people"></i></div><span class="kpi-label">Beneficiarios</span></div>
+                <div class="kpi-value" id="kpiAnualBen">$ 0.00</div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-green"><i class="bi bi-calendar-check"></i></div><span class="kpi-label">Meses procesados</span></div>
+                <div class="kpi-value" id="kpiAnualMeses">0</div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="kpi">
+                <div class="kpi-head"><div class="kpi-icon ic-orange"><i class="bi bi-rocket-takeoff"></i></div><span class="kpi-label">Proyección anual</span></div>
+                <div class="kpi-value" id="kpiAnualProyeccion">$ 0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-i mb-3">
+            <h2 class="card-title-i mb-3">Tendencia de facturación mensual</h2>
+            <div class="chart-wrapper" style="height:320px;"><canvas id="chartAnualTendencia"></canvas></div>
+          </div>
+
+          <div class="card-i">
+            <h2 class="card-title-i mb-3">Consolidado anual por Unidad de Negocio</h2>
+            <div class="table-box">
+              <table class="table align-middle table-iungo">
+                <thead><tr><th>Unidad de Negocio</th><th class="text-end">Total Beneficiarios</th><th class="text-end">Total IVA</th><th class="text-end th-accent">Facturado Acumulado</th></tr></thead>
+                <tbody id="tableAnualBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      /* =========================================================
+         ESTADO
+         ========================================================= */
+      let RAW_CACHE = {};   /* datos completos que llegan del servidor */
+      let LOCAL_CACHE = {}; /* datos filtrados por el grupo seleccionado (con su fila Totales) */
+      let GRUPO = 'holding';
+      const GRUPO_INFO = {
+        holding: { nombre: 'Holding\u2019s', icono: 'bi-buildings' },
+        externo: { nombre: 'Clientes Externos', icono: 'bi-person-badge' },
+        todos:   { nombre: 'Consolidado', icono: 'bi-collection' }
+      };
+      let RAW_FILES = [];
+      let chartObjMensual = null, chartObjTendMes = null, chartObjComparativo = null, chartObjAnual = null;
+      let isDarkMode = false;
+      let currentTab = 'mensual';
+
+      const PALETA_IUNGO = ['#6B2D82', '#00BCD4', '#A82282', '#F59E0B', '#10B981', '#4A1A5B', '#00838F', '#D81B60', '#8A92A6', '#311B92', '#C99BDB', '#80DEEA'];
+      const MESES = { 'enero':1,'febrero':2,'marzo':3,'abril':4,'mayo':5,'junio':6,'julio':7,'agosto':8,'septiembre':9,'octubre':10,'noviembre':11,'diciembre':12 };
+      const MES_CORTO = ['', 'Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+      if (window.Chart) Chart.defaults.font.family = "'Plus Jakarta Sans', 'Segoe UI', sans-serif";
+
+      /* =========================================================
+         UTILIDADES
+         ========================================================= */
+      const toNum = (v) => {
+        if (typeof v === 'number') return v;
+        let n = parseFloat(String(v == null ? '' : v).replace(/[^0-9.\-]/g, ''));
+        return isNaN(n) ? 0 : n;
+      };
+      const formatNum = (val) => {
+        let n = typeof val === 'number' ? val : parseFloat(String(val).replace(/[^0-9.\-]/g, ''));
+        return isNaN(n) ? val : '$ ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      };
+      const formatPct = (val) => (val > 0 ? '+' : '') + parseFloat(val).toFixed(2) + '%';
+      const formatCorto = (v) => {
+        let a = Math.abs(v);
+        if (a >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+        if (a >= 1e3) return '$' + (v / 1e3).toFixed(0) + 'K';
+        return '$' + v.toFixed(0);
+      };
+      const esTotal = (r) => String(r.empresa).toLowerCase().includes('totales');
+      const limpiarEmpresa = (e) => String(e).replace(', S.A.', '').trim();
+      const limpiarNombre = (name) => name.replace('.xlsx', '').replace(/Facturaci\u00f3n Beneficio M\u00e9dico/gi, '').replace(/Facturaci\u00f3n Asistencia M\u00e9dica/gi, '').replace(/^[\s\-_]+|[\s\-_]+$/g, '').trim();
+
+      function fechaDe(nombre) {
+        let n = nombre.toLowerCase(), mes = 0, anio = 0;
+        for (let m in MESES) { if (n.includes(m)) { mes = MESES[m]; break; } }
+        let mA = n.match(/\b(20\d{2})\b/);
+        if (mA) anio = parseInt(mA[1], 10);
+        return { mes, anio };
+      }
+
+      /* Totales de un archivo: usa la fila "Totales" si existe, si no suma las empresas */
+      function getTotales(data) {
+        if (!data) return null;
+        let row = data.find(esTotal);
+        if (row) return { b: toNum(row.beneficiarios), i: toNum(row.iva), t: toNum(row.total) };
+        let s = { b: 0, i: 0, t: 0 };
+        data.forEach(r => { s.b += toNum(r.beneficiarios); s.i += toNum(r.iva); s.t += toNum(r.total); });
+        return s;
+      }
+
+      function animateValue(obj, start, end, duration, formatFn) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const ease = progress * (2 - progress);
+          obj.innerHTML = formatFn(start + ease * (end - start));
+          if (progress < 1) window.requestAnimationFrame(step);
+          else obj.innerHTML = formatFn(end);
+        };
+        window.requestAnimationFrame(step);
+      }
+
+      function setDelta(el, actual, previo) {
+        if (previo === null || previo === undefined) { el.innerHTML = '<span class="muted">Sin mes anterior para comparar</span>'; return; }
+        if (previo === 0) { el.innerHTML = '<span class="muted">Mes anterior en cero</span>'; return; }
+        let pct = ((actual - previo) / previo) * 100;
+        let cls = pct > 0 ? 'text-positive' : (pct < 0 ? 'text-negative' : 'muted');
+        let icon = pct > 0 ? 'bi-arrow-up' : (pct < 0 ? 'bi-arrow-down' : 'bi-dash');
+        el.innerHTML = `<span class="${cls}"><i class="bi ${icon}"></i> ${Math.abs(pct).toFixed(1)}%</span> <span class="muted">vs mes anterior</span>`;
+      }
+
+      const getGridColor = () => isDarkMode ? '#2E2838' : '#EFE8F4';
+      const getTextColor = () => isDarkMode ? '#B7B0C4' : '#7B748A';
+      const getChartBorder = () => isDarkMode ? '#1B1722' : '#ffffff';
+      const tooltipBase = { backgroundColor: 'rgba(42,14,56,.94)', titleFont: { size: 12 }, bodyFont: { size: 12, weight: 'bold' }, padding: 10, cornerRadius: 8 };
+
+      function gradiente(ctx, area, color) {
+        let g = ctx.createLinearGradient(0, area.top, 0, area.bottom);
+        g.addColorStop(0, color.replace('ALPHA', isDarkMode ? '.35' : '.22'));
+        g.addColorStop(1, color.replace('ALPHA', '0'));
+        return g;
+      }
+
+      function setHero(texto) { document.getElementById('heroSub').innerText = texto; }
+
+      /* Arma la vista del grupo: filtra empresas y agrega una fila Totales recalculada */
+      function construirVista() {
+        let vista = {};
+        for (let id in RAW_CACHE) {
+          let filas = (RAW_CACHE[id] || []).filter(r => {
+            if (esTotal(r)) return false;
+            let g = r.grupo || 'holding';
+            return GRUPO === 'todos' || g === GRUPO;
+          });
+          let t = { b: 0, i: 0, t: 0 };
+          filas.forEach(r => { t.b += toNum(r.beneficiarios); t.i += toNum(r.iva); t.t += toNum(r.total); });
+          vista[id] = filas.length ? filas.concat([{ empresa: 'Totales', beneficiarios: t.b, iva: t.i, total: t.t }]) : [];
+        }
+        LOCAL_CACHE = vista;
+      }
+
+      function cambiarGrupo(g) {
+        GRUPO = g;
+        document.querySelectorAll('.grupo-switch .nav-link').forEach(b => b.classList.toggle('active', b.getAttribute('data-grupo') === g));
+        let chip = document.getElementById('grupoChip');
+        chip.className = 'grupo-chip g-' + g;
+        chip.innerHTML = '<i class="bi ' + GRUPO_INFO[g].icono + '"></i> ' + GRUPO_INFO[g].nombre;
+        try { localStorage.setItem('iungoGrupo', g); } catch (e) {}
+        construirVista();
+        recargarVista();
+      }
+
+      function filaVacia(tbody, columnas) {
+        tbody.innerHTML = '<tr class="fila-vacia"><td colspan="' + columnas + '">No hay registros de ' + GRUPO_INFO[GRUPO].nombre + ' en este periodo.</td></tr>';
+      }
+
+      /* =========================================================
+         TEMA
+         ========================================================= */
+      function aplicarTema() {
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        document.getElementById('btnDarkMode').innerHTML = isDarkMode ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon-stars"></i>';
+      }
+      function toggleDarkMode() {
+        isDarkMode = !isDarkMode;
+        aplicarTema();
+        try { localStorage.setItem('iungoDark', isDarkMode ? '1' : '0'); } catch (e) {}
+        recargarVista();
+      }
+      try { isDarkMode = localStorage.getItem('iungoDark') === '1'; } catch (e) {}
+      aplicarTema();
+
+      /* =========================================================
+         NAVEGACI\u00d3N
+         ========================================================= */
+      function modoVista(tipo) {
+        currentTab = tipo;
+        document.getElementById('ctrl-mensual').style.display = tipo === 'mensual' ? 'flex' : 'none';
+        document.getElementById('ctrl-comparativo').style.display = tipo === 'comparativo' ? 'flex' : 'none';
+        document.getElementById('ctrl-anual').style.display = tipo === 'anual' ? 'flex' : 'none';
+        setTimeout(recargarVista, 150);
+      }
+      function recargarVista() {
+        if (currentTab === 'mensual') loadMensual();
+        if (currentTab === 'comparativo') loadComparativo();
+        if (currentTab === 'anual') loadAnual();
+      }
+
+      function copiarResumenAlPortapapeles() {
+        let lista = document.getElementById('textoAnalisis').getElementsByTagName('li');
+        let texto = "An\u00e1lisis Ejecutivo de Facturaci\u00f3n:\n\n";
+        for (let i = 0; i < lista.length; i++) texto += "\u2022 " + lista[i].innerText + "\n";
+        navigator.clipboard.writeText(texto).then(() => {
+          let btn = document.getElementById('btnCopiarResumen');
+          let orig = btn.innerHTML;
+          btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Copiado';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2500);
+        });
+      }
+
+      /* =========================================================
+         CARGA DE DATOS
+         ========================================================= */
+      function pedirDatos(forzar) {
+        LOADER_T0 = Date.now();
+        google.script.run
+          .withSuccessHandler(initDashboard)
+          .withFailureHandler(err => {
+            document.getElementById('loaderText').innerHTML = 'No se pudieron leer los archivos de Drive.<br><small class="fw-normal">' + (err && err.message ? err.message : err) + '</small><br><button class="btn btn-light btn-sm mt-3" onclick="forceReloadData()">Intentar de nuevo</button>';
+          })
+          .getAllMonthsData(!!forzar);
+      }
+      try {
+        let gGuardado = localStorage.getItem('iungoGrupo');
+        if (gGuardado && GRUPO_INFO[gGuardado]) {
+          GRUPO = gGuardado;
+          document.querySelectorAll('.grupo-switch .nav-link').forEach(b => b.classList.toggle('active', b.getAttribute('data-grupo') === GRUPO));
+          let chip = document.getElementById('grupoChip');
+          chip.className = 'grupo-chip g-' + GRUPO;
+          chip.innerHTML = '<i class="bi ' + GRUPO_INFO[GRUPO].icono + '"></i> ' + GRUPO_INFO[GRUPO].nombre;
+        }
+      } catch (e) {}
+      pedirDatos(false);
+
+      function forceReloadData() {
+        document.getElementById('loaderText').innerText = 'Consultando base de datos segura...';
+        document.getElementById('initialLoader').style.display = 'flex';
+        pedirDatos(true);
+      }
+
+      function initDashboard(response) {
+        try { initDashboardInterno(response); }
+        catch (e) {
+          document.getElementById('loaderText').innerHTML = 'Error al mostrar los datos.<br><small class="fw-normal">' + e.message + '</small><br><button class="btn btn-light btn-sm mt-3" onclick="forceReloadData()">Intentar de nuevo</button>';
+          console.error(e);
+        }
+      }
+
+      function initDashboardInterno(response) {
+        if (!response || !response.files) throw new Error('El servidor no devolvi\u00f3 datos.');
+        RAW_CACHE = response.data;
+        construirVista();
+        RAW_FILES = response.files;
+        let selMes = document.getElementById('fileSelectMes'), selAct = document.getElementById('compSelectActual'),
+            selAnt = document.getElementById('compSelectAnterior'), selAnio = document.getElementById('selectAnio');
+
+        /* Conservar selecci\u00f3n actual al sincronizar */
+        let prevMes = selMes.value, prevAct = selAct.value, prevAnt = selAnt.value, prevAnio = selAnio.value;
+
+        let optionsHtml = '', aniosSet = new Set();
+        RAW_FILES.forEach(f => {
+          let name = limpiarNombre(f.name);
+          optionsHtml += `<option value="${f.id}">${name}</option>`;
+          let mA = name.match(/\b(20\d{2})\b/);
+          if (mA) aniosSet.add(mA[1]);
+        });
+        selMes.innerHTML = selAct.innerHTML = selAnt.innerHTML = optionsHtml;
+
+        let optionsAnio = '';
+        Array.from(aniosSet).sort((a, b) => b - a).forEach(a => { optionsAnio += `<option value="${a}">${a}</option>`; });
+        selAnio.innerHTML = optionsAnio;
+
+        if (RAW_FILES.length > 1) selAnt.selectedIndex = 1;
+        if (prevMes && RAW_CACHE[prevMes]) selMes.value = prevMes;
+        if (prevAct && RAW_CACHE[prevAct]) selAct.value = prevAct;
+        if (prevAnt && RAW_CACHE[prevAnt]) selAnt.value = prevAnt;
+        if (prevAnio && aniosSet.has(prevAnio)) selAnio.value = prevAnio;
+
+        let ahora = new Date();
+        document.getElementById('syncTime').innerText = 'Actualizado ' + ahora.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('initialLoader').style.display = 'none';
+        recargarVista();
+      }
+
+      /* =========================================================
+         PESTA\u00d1A 1: RESUMEN MENSUAL
+         ========================================================= */
+      function loadMensual() {
+        let sel = document.getElementById('fileSelectMes');
+        if (!sel.value || !LOCAL_CACHE[sel.value]) return;
+
+        let data = LOCAL_CACHE[sel.value];
+        let idx = RAW_FILES.findIndex(f => f.id === sel.value);
+        let file = RAW_FILES[idx];
+        let nombreMes = sel.options[sel.selectedIndex].text;
+        setHero('Panel de control \u00b7 ' + nombreMes);
+
+        /* KPIs + variaci\u00f3n contra el mes anterior (siguiente en la lista ordenada) */
+        let tot = getTotales(data);
+        let prevFile = RAW_FILES[idx + 1];
+        let prevTot = prevFile && LOCAL_CACHE[prevFile.id] ? getTotales(LOCAL_CACHE[prevFile.id]) : null;
+
+        animateValue(document.getElementById('kpiMesTotal'), 0, tot.t, 1200, formatNum);
+        animateValue(document.getElementById('kpiMesBen'), 0, tot.b, 1200, formatNum);
+        animateValue(document.getElementById('kpiMesIva'), 0, tot.i, 1200, formatNum);
+        setDelta(document.getElementById('deltaMesTotal'), tot.t, prevTot ? prevTot.t : null);
+        setDelta(document.getElementById('deltaMesBen'), tot.b, prevTot ? prevTot.b : null);
+        setDelta(document.getElementById('deltaMesIva'), tot.i, prevTot ? prevTot.i : null);
+
+        /* Proyecci\u00f3n anual: meses del mismo a\u00f1o hasta el mes seleccionado */
+        let fSel = fechaDe(file.name);
+        let mesesAnio = RAW_FILES.slice().reverse().filter(f => {
+          let fd = fechaDe(f.name);
+          return fd.anio === fSel.anio && LOCAL_CACHE[f.id];
+        });
+        let hastaSel = mesesAnio.filter(f => fSel.mes === 0 || fechaDe(f.name).mes <= fSel.mes);
+        let sumaAnio = hastaSel.reduce((s, f) => s + getTotales(LOCAL_CACHE[f.id]).t, 0);
+        let proy = hastaSel.length > 0 && hastaSel.length < 12 ? sumaAnio + (sumaAnio / hastaSel.length) * (12 - hastaSel.length) : sumaAnio;
+        animateValue(document.getElementById('kpiMesProy'), 0, proy, 1200, formatNum);
+        document.getElementById('deltaMesProy').innerHTML = `<span class="muted">${fSel.anio || ''} \u00b7 con ${hastaSel.length} ${hastaSel.length === 1 ? 'mes' : 'meses'} procesados</span>`;
+
+        /* Tabla */
+        let tbody = document.getElementById('tableMensualBody');
+        tbody.innerHTML = '';
+        let labels = [], values = [];
+        data.forEach(row => {
+          let isTotal = esTotal(row);
+          let tr = document.createElement('tr');
+          if (isTotal) tr.className = 'row-totales';
+          let emp = limpiarEmpresa(row.empresa);
+          tr.innerHTML = `<td>${isTotal ? ('Total ' + GRUPO_INFO[GRUPO].nombre) : `<strong>${emp}</strong>`}</td><td class="text-end">${formatNum(row.beneficiarios)}</td><td class="text-end">${formatNum(row.iva)}</td><td class="text-end fw-bold">${formatNum(row.total)}</td>`;
+          tbody.appendChild(tr);
+          if (!isTotal) { labels.push(emp); values.push(toNum(row.total)); }
+        });
+        if (!data.length) filaVacia(tbody, 4);
+
+        var BARRA = String.fromCharCode(47);
+        document.getElementById('btnDescargaMes').href = 'https:' + BARRA + BARRA + 'docs.google.com' + BARRA + 'spreadsheets' + BARRA + 'd' + BARRA + sel.value + BARRA + 'export?format=xlsx';
+
+        /* Dona + leyenda con porcentajes */
+        let sumaEmp = values.reduce((a, b) => a + b, 0);
+        document.getElementById('donutTotal').innerText = formatNum(tot.t);
+        let orden = labels.map((l, i) => ({ l, v: values[i], c: PALETA_IUNGO[i % PALETA_IUNGO.length] })).sort((a, b) => b.v - a.v);
+        document.getElementById('donutLegend').innerHTML = orden.map(o =>
+          `<div class="item"><span class="name"><i class="legend-dot" style="background:${o.c}"></i>${o.l}</span><span class="pct">${sumaEmp > 0 ? ((o.v / sumaEmp) * 100).toFixed(1) : 0}%</span></div>`
+        ).join('');
+
+        if (chartObjMensual) chartObjMensual.destroy();
+        chartObjMensual = new Chart(document.getElementById('chartMensual').getContext('2d'), {
+          type: 'doughnut',
+          data: { labels, datasets: [{ data: values, backgroundColor: labels.map((_, i) => PALETA_IUNGO[i % PALETA_IUNGO.length]), borderWidth: 3, borderColor: getChartBorder(), hoverOffset: 8 }] },
+          options: {
+            responsive: true, maintainAspectRatio: false, cutout: '68%',
+            plugins: {
+              legend: { display: false },
+              tooltip: Object.assign({}, tooltipBase, {
+                callbacks: { label: (c) => { let v = c.raw || 0; return ` $ ${v.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${sumaEmp > 0 ? ((v / sumaEmp) * 100).toFixed(1) : 0}%)`; } }
+              })
+            }
+          }
+        });
+
+        /* Tendencia del a\u00f1o del archivo seleccionado */
+        let tLabels = [], tTotal = [], tBen = [], tRadius = [];
+        mesesAnio.forEach(f => {
+          let fd = fechaDe(f.name), tt = getTotales(LOCAL_CACHE[f.id]);
+          tLabels.push(fd.mes ? MES_CORTO[fd.mes] : limpiarNombre(f.name));
+          tTotal.push(tt.t); tBen.push(tt.b);
+          tRadius.push(f.id === sel.value ? 7 : 4);
+        });
+        document.getElementById('tituloTendMes').innerText = 'Facturaci\u00f3n mensual ' + (fSel.anio || '');
+
+        if (chartObjTendMes) chartObjTendMes.destroy();
+        chartObjTendMes = new Chart(document.getElementById('chartTendMes').getContext('2d'), {
+          type: 'line',
+          data: {
+            labels: tLabels,
+            datasets: [
+              { label: 'Total', data: tTotal, borderColor: '#6B2D82', borderWidth: 2.5, tension: 0.35, fill: true, pointRadius: tRadius, pointBackgroundColor: '#6B2D82', pointBorderColor: getChartBorder(), pointBorderWidth: 2,
+                backgroundColor: (c) => { const { ctx, chartArea } = c.chart; return chartArea ? gradiente(ctx, chartArea, 'rgba(107,45,130,ALPHA)') : null; } },
+              { label: 'Beneficiarios', data: tBen, borderColor: '#00BCD4', borderWidth: 2.5, tension: 0.35, fill: true, pointRadius: tRadius, pointBackgroundColor: '#00BCD4', pointBorderColor: getChartBorder(), pointBorderWidth: 2,
+                backgroundColor: (c) => { const { ctx, chartArea } = c.chart; return chartArea ? gradiente(ctx, chartArea, 'rgba(0,188,212,ALPHA)') : null; } }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { display: false }, tooltip: Object.assign({}, tooltipBase, { callbacks: { label: (c) => ` ${c.dataset.label}: ${formatNum(c.raw)}` } }) },
+            scales: {
+              y: { beginAtZero: true, border: { display: false }, grid: { color: getGridColor() }, ticks: { color: getTextColor(), callback: formatCorto } },
+              x: { grid: { display: false }, ticks: { color: getTextColor() } }
+            }
+          }
+        });
+      }
+
+      /* =========================================================
+         PESTA\u00d1A 2: AN\u00c1LISIS COMPARATIVO
+         ========================================================= */
+      function loadComparativo() {
+        let selAct = document.getElementById('compSelectActual'), selAnt = document.getElementById('compSelectAnterior');
+        let idAct = selAct.value, idAnt = selAnt.value;
+        if (!idAct || !idAnt || !LOCAL_CACHE[idAct] || !LOCAL_CACHE[idAnt]) return;
+
+        let nameAct = selAct.options[selAct.selectedIndex].text, nameAnt = selAnt.options[selAnt.selectedIndex].text;
+        setHero('Panel de control \u00b7 ' + nameAnt + ' vs ' + nameAct);
+        document.getElementById('thMesActual').innerText = nameAct;
+        document.getElementById('thMesAnterior').innerText = nameAnt;
+
+        let mapEmpresas = {};
+        LOCAL_CACHE[idAnt].forEach(r => { mapEmpresas[String(r.empresa).trim()] = { ant: toNum(r.total), act: 0 }; });
+        LOCAL_CACHE[idAct].forEach(r => {
+          let emp = String(r.empresa).trim();
+          if (!mapEmpresas[emp]) mapEmpresas[emp] = { ant: 0, act: 0 };
+          mapEmpresas[emp].act = toNum(r.total);
+        });
+
+        let tbody = document.getElementById('tableComparativaBody');
+        tbody.innerHTML = '';
+        let labels = [], dataAnt = [], dataAct = [], granTotalAnt = 0, granTotalAct = 0;
+        let mejorEmpresa = { name: '', diff: -Infinity }, peorEmpresa = { name: '', diff: Infinity };
+        let filaTotal = null;
+
+        for (let emp in mapEmpresas) {
+          let isTotal = emp.toLowerCase().includes('totales');
+          let ant = mapEmpresas[emp].ant, act = mapEmpresas[emp].act, diffNum = act - ant;
+          let diffPct = ant === 0 ? (act > 0 ? 100 : 0) : (diffNum / ant) * 100;
+          let empLimpio = limpiarEmpresa(emp);
+
+          if (isTotal) { granTotalAnt = ant; granTotalAct = act; }
+          else {
+            labels.push(empLimpio); dataAnt.push(ant); dataAct.push(act);
+            if (diffNum > mejorEmpresa.diff) mejorEmpresa = { name: empLimpio, diff: diffNum };
+            if (diffNum < peorEmpresa.diff) peorEmpresa = { name: empLimpio, diff: diffNum };
+          }
+
+          let tr = document.createElement('tr');
+          if (isTotal) tr.className = 'row-totales';
+          let cls = diffNum > 0 ? 'text-positive' : (diffNum < 0 ? 'text-negative' : 'text-muted');
+          tr.innerHTML = `<td>${isTotal ? ('Total ' + GRUPO_INFO[GRUPO].nombre) : `<strong>${empLimpio}</strong>`}</td><td class="text-end">${formatNum(ant)}</td><td class="text-end fw-bold">${formatNum(act)}</td><td class="text-end ${cls}">${formatNum(diffNum)}</td><td class="text-end ${cls}">${formatPct(diffPct)}</td>`;
+          if (isTotal) filaTotal = tr; else tbody.appendChild(tr);
+        }
+        if (filaTotal) tbody.appendChild(filaTotal); /* totales siempre al final */
+        if (!tbody.children.length) filaVacia(tbody, 5);
+
+        let varGlobalNum = granTotalAct - granTotalAnt;
+        let varGlobalPct = granTotalAnt === 0 ? 0 : (varGlobalNum / granTotalAnt) * 100;
+        animateValue(document.getElementById('kpiDiffDinero'), 0, varGlobalNum, 1200, formatNum);
+        animateValue(document.getElementById('kpiDiffPorcentaje'), 0, varGlobalPct, 1200, formatPct);
+        let clsG = varGlobalNum > 0 ? 'text-positive' : (varGlobalNum < 0 ? 'text-negative' : '');
+        document.getElementById('kpiDiffDinero').className = 'kpi-value ' + clsG;
+        document.getElementById('kpiDiffPorcentaje').className = 'kpi-value ' + clsG;
+        document.getElementById('kpiMejorEmpresa').innerText = mejorEmpresa.diff > 0 ? mejorEmpresa.name : '-';
+
+        let ul = document.getElementById('textoAnalisis');
+        ul.innerHTML = '';
+        if (idAct === idAnt) {
+          ul.innerHTML = `<li>Se est\u00e1 comparando <strong>${nameAct}</strong> consigo mismo. Variaci\u00f3n nula.</li>`;
+        } else {
+          let tend = varGlobalNum > 0 ? `<span class="text-positive">incremento del ${formatPct(varGlobalPct)}</span> (+${formatNum(varGlobalNum)})`
+                   : (varGlobalNum < 0 ? `<span class="text-negative">disminuci\u00f3n del ${formatPct(varGlobalPct)}</span> (${formatNum(varGlobalNum)})` : 'comportamiento plano');
+          ul.innerHTML += `<li>En <strong>${nameAct}</strong>, el consolidado alcanz\u00f3 los <strong>${formatNum(granTotalAct)}</strong>, representando un ${tend} respecto a ${nameAnt}.</li>`;
+          if (mejorEmpresa.diff > 0) ul.innerHTML += `<li>Mayor impulsor: <strong>${mejorEmpresa.name}</strong> aport\u00f3 una variaci\u00f3n positiva de <span class="text-positive">+${formatNum(mejorEmpresa.diff)}</span>.</li>`;
+          if (peorEmpresa.diff < 0) ul.innerHTML += `<li>Mayor ajuste a la baja: <strong>${peorEmpresa.name}</strong> con una reducci\u00f3n de <span class="text-negative">${formatNum(peorEmpresa.diff)}</span>.</li>`;
+        }
+
+        if (chartObjComparativo) chartObjComparativo.destroy();
+        chartObjComparativo = new Chart(document.getElementById('chartComparativo').getContext('2d'), {
+          type: 'bar',
+          data: { labels, datasets: [
+            { label: nameAnt + ' (Base)', data: dataAnt, backgroundColor: isDarkMode ? '#4A3D5A' : '#D9C7E6', borderRadius: 6, maxBarThickness: 34 },
+            { label: nameAct + ' (Actual)', data: dataAct, backgroundColor: '#6B2D82', borderRadius: 6, maxBarThickness: 34 }
+          ] },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', align: 'end', labels: { color: getTextColor(), usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } }, tooltip: Object.assign({}, tooltipBase, { callbacks: { label: (c) => ` ${c.dataset.label}: ${formatNum(c.raw)}` } }) },
+            scales: { y: { border: { display: false }, grid: { color: getGridColor() }, ticks: { color: getTextColor(), callback: formatCorto } }, x: { grid: { display: false }, ticks: { color: getTextColor() } } }
+          }
+        });
+      }
+
+      /* =========================================================
+         PESTA\u00d1A 3: ACUMULADO ANUAL
+         ========================================================= */
+      function loadAnual() {
+        let anioSel = document.getElementById('selectAnio').value;
+        if (!anioSel) return;
+        setHero('Panel de control \u00b7 A\u00f1o ' + anioSel);
+
+        let mapEmpresas = {}, trendLabels = [], trendValues = [], mesesCount = 0;
+        RAW_FILES.slice().reverse().forEach(f => {
+          if (!f.name.includes(anioSel)) return;
+          let monthData = LOCAL_CACHE[f.id];
+          if (!monthData) return;
+          mesesCount++;
+          let fd = fechaDe(f.name);
+          trendLabels.push(fd.mes ? MES_CORTO[fd.mes] : limpiarNombre(f.name).replace(anioSel, '').trim());
+          monthData.forEach(r => {
+            if (esTotal(r)) return;
+            let emp = String(r.empresa).trim();
+            if (!mapEmpresas[emp]) mapEmpresas[emp] = { b: 0, i: 0, t: 0 };
+            mapEmpresas[emp].b += toNum(r.beneficiarios); mapEmpresas[emp].i += toNum(r.iva); mapEmpresas[emp].t += toNum(r.total);
+          });
+          trendValues.push(getTotales(monthData).t);
+        });
+
+        let tbody = document.getElementById('tableAnualBody');
+        tbody.innerHTML = '';
+        let sumBen = 0, sumIva = 0, sumTotal = 0;
+        for (let emp in mapEmpresas) {
+          let m = mapEmpresas[emp];
+          sumBen += m.b; sumIva += m.i; sumTotal += m.t;
+          let tr = document.createElement('tr');
+          tr.innerHTML = `<td><strong>${limpiarEmpresa(emp)}</strong></td><td class="text-end">${formatNum(m.b)}</td><td class="text-end">${formatNum(m.i)}</td><td class="text-end fw-bold">${formatNum(m.t)}</td>`;
+          tbody.appendChild(tr);
+        }
+        let trTotal = document.createElement('tr');
+        trTotal.className = 'row-totales';
+        trTotal.innerHTML = `<td>Total acumulado ${GRUPO_INFO[GRUPO].nombre}</td><td class="text-end">${formatNum(sumBen)}</td><td class="text-end">${formatNum(sumIva)}</td><td class="text-end">${formatNum(sumTotal)}</td>`;
+        if (Object.keys(mapEmpresas).length) tbody.appendChild(trTotal); else filaVacia(tbody, 4);
+
+        let proyeccion = sumTotal;
+        if (mesesCount > 0 && mesesCount < 12) proyeccion = sumTotal + (sumTotal / mesesCount) * (12 - mesesCount);
+
+        animateValue(document.getElementById('kpiAnualTotal'), 0, sumTotal, 1200, formatNum);
+        animateValue(document.getElementById('kpiAnualBen'), 0, sumBen, 1200, formatNum);
+        animateValue(document.getElementById('kpiAnualProyeccion'), 0, proyeccion, 1200, formatNum);
+        document.getElementById('kpiAnualMeses').innerText = mesesCount;
+
+        if (chartObjAnual) chartObjAnual.destroy();
+        chartObjAnual = new Chart(document.getElementById('chartAnualTendencia').getContext('2d'), {
+          type: 'line',
+          data: { labels: trendLabels, datasets: [{
+            label: 'Facturaci\u00f3n', data: trendValues, borderColor: '#A82282', borderWidth: 2.5, fill: true, tension: 0.35,
+            pointRadius: 5, pointBackgroundColor: '#6B2D82', pointBorderColor: getChartBorder(), pointBorderWidth: 2,
+            backgroundColor: (c) => { const { ctx, chartArea } = c.chart; return chartArea ? gradiente(ctx, chartArea, 'rgba(168,34,130,ALPHA)') : null; }
+          }] },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: Object.assign({}, tooltipBase, { callbacks: { label: (c) => ' ' + formatNum(c.raw) } }) },
+            scales: { y: { beginAtZero: true, border: { display: false }, grid: { color: getGridColor() }, ticks: { color: getTextColor(), callback: formatCorto } }, x: { grid: { display: false }, ticks: { color: getTextColor() } } }
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
